@@ -13,7 +13,7 @@
 
 <meta name="date" content="2023-08-15" />
 
-<title>Aula3</title>
+<title>Exemplo de RMarkdown</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,7 +350,7 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Aula3</h1>
+<h1 class="title toc-ignore">Exemplo de RMarkdown</h1>
 <h4 class="author">Guilherme</h4>
 <h4 class="date">2023-08-15</h4>
 
@@ -382,10 +382,23 @@ display: none;
 <li>Colocar <code>output</code> como <code>pdf_document</code></li>
 <li>Apertar <code>Knit</code></li>
 </ol></li>
+<li><p>Gerar Word</p>
+<ol style="list-style-type: decimal">
+<li>Aperte o drop down do <code>Knit</code></li>
+<li>Escolha <code>Knit to Word</code></li>
+</ol>
+<p>Ou</p>
+<ol style="list-style-type: decimal">
+<li>Colocar <code>output</code> como <code>word_document</code></li>
+<li>Apertar <code>Knit</code></li>
+</ol></li>
 <li><p>Gerando multiplos tipos</p>
-<pre class="yaml"><code>output: 
+<pre class="yaml"><code>output:
   html_document: default
-  pdf_document: default</code></pre></li>
+  pdf_document: default
+  word_document: default
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_format = &quot;all&quot;) })</code></pre></li>
 </ul>
 </div>
 <div id="colocando-código-em-r" class="section level1">

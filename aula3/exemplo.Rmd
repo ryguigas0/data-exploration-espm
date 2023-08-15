@@ -1,10 +1,13 @@
 ---
-title: "Aula3"
+title: "Exemplo de RMarkdown"
 author: "Guilherme"
 date: "2023-08-15"
-output: 
+output:
   html_document: default
   pdf_document: default
+  word_document: default
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_format = "all") })
 ---
 
 # Como criar esse arquivo
@@ -24,11 +27,22 @@ output:
   2. Rode `tinytex::install_tinytex()`
   3. Colocar `output` como `pdf_document`
   4. Apertar `Knit`
+- Gerar Word
+  1. Aperte o drop down do `Knit`
+  2. Escolha `Knit to Word`
+  
+  Ou
+  
+  1. Colocar `output` como `word_document`
+  2. Apertar `Knit`
 - Gerando multiplos tipos
   ```yaml
-  output: 
+  output:
     html_document: default
     pdf_document: default
+    word_document: default
+  knit: (function(inputFile, encoding) {
+    rmarkdown::render(inputFile, encoding = encoding, output_format = "all") })
   ```
 
 # Colocando código em R
