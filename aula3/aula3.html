@@ -370,54 +370,87 @@ display: none;
 <div id="gerando-arquivos-a-partir-desse-arquivo" class="section level1">
 <h1>Gerando arquivos a partir desse arquivo</h1>
 <ul>
-<li>Gerar HTML
+<li><p>Gerar HTML</p>
 <ol style="list-style-type: decimal">
 <li>Colocar <code>output</code> como <code>html_document</code></li>
 <li>Apertar <code>Knit</code></li>
 </ol></li>
-<li>Gerar PDF
+<li><p>Gerar PDF</p>
 <ol style="list-style-type: decimal">
 <li>Instale o pacote <code>tinytex</code></li>
 <li>Rode <code>tinytex::install_tinytex()</code></li>
 <li>Colocar <code>output</code> como <code>pdf_document</code></li>
 <li>Apertar <code>Knit</code></li>
 </ol></li>
+<li><p>Gerando multiplos tipos</p>
+<pre class="yaml"><code>output: 
+  html_document: default
+  pdf_document: default</code></pre></li>
 </ul>
 </div>
 <div id="colocando-código-em-r" class="section level1">
 <h1>Colocando código em R</h1>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.2     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-## ✔ purrr     1.0.2     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(knitr)
-
-fonte = read.csv(&quot;cces_sample.csv&quot;)
-
-dados1 &lt;- fonte %&gt;% 
-  select(&#39;educ&#39;, &#39;edloan&#39;, &#39;employ&#39;, &#39;CC18_308a&#39;)
-  
-dados1 %&gt;%
-  head() %&gt;%
-  kable() %&gt;% 
-  print()</code></pre>
-<pre><code>## 
-## 
-## | educ| edloan| employ| CC18_308a|
-## |----:|------:|------:|---------:|
-## |    2|      2|      5|         2|
-## |    6|      2|      1|         4|
-## |    3|      2|      1|         4|
-## |    5|      2|      5|         4|
-## |    2|     NA|      8|         4|
-## |    3|      2|      1|         4|</code></pre>
+<ol style="list-style-type: decimal">
+<li>Crie um bloco de código escopado</li>
+<li>Adicione no bloco depois das 3 primeiras crases
+<code>{r}</code></li>
+</ol>
+<ul>
+<li><p>Se quiser que suma a mensagem de saida:
+<code>{r, message = FALSE}</code></p></li>
+<li><p>Se quiser apenas a saída, sem o código: `{r, echo =
+FALSE}``</p></li>
+<li><p>O <code>kable</code> gera as tabelas já formatadas para o
+documento</p></li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th align="right">educ</th>
+<th align="right">edloan</th>
+<th align="right">employ</th>
+<th align="right">CC18_308a</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">NA</td>
+<td align="right">8</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">4</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="template-de-quando-cria-o-arquivo" class="section level1">
 <h1>Template de quando cria o arquivo</h1>

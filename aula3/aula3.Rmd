@@ -2,7 +2,9 @@
 title: "Aula3"
 author: "Guilherme"
 date: "2023-08-15"
-output: html_document
+output: 
+  html_document: default
+  pdf_document: default
 ---
 
 # Como criar esse arquivo
@@ -22,10 +24,23 @@ output: html_document
   2. Rode `tinytex::install_tinytex()`
   3. Colocar `output` como `pdf_document`
   4. Apertar `Knit`
+- Gerando multiplos tipos
+  ```yaml
+  output: 
+    html_document: default
+    pdf_document: default
+  ```
 
 # Colocando código em R
 
-```{r}
+1. Crie um bloco de código escopado
+2. Adicione no bloco depois das 3 primeiras crases `{r}`
+  - Se quiser que suma a mensagem de saida: `{r, message = FALSE}`
+  - Se quiser apenas a saída, sem o código: `{r, echo = FALSE}``
+
+- O `kable` gera as tabelas já formatadas para o documento
+
+```{r, echo= FALSE, message= FALSE}
 library(tidyverse)
 library(knitr)
 
@@ -36,8 +51,7 @@ dados1 <- fonte %>%
   
 dados1 %>%
   head() %>%
-  kable() %>% 
-  print()
+  kable()
 ```
 
 
