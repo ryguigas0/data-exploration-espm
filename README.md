@@ -1,5 +1,8 @@
 # Análise de Dados
 
+## Relatórios gerados
+- [Aula 3](https://ryguigas0.github.io/data-exploration-espm/aula3/aula3.html)
+
 ## Ferramentas necessárias
 
 - [R 4.2.1](https://cran.r-project.org/): linguagem de programação voltada para calculos estatísticos, coleta de dados e visualização de dados
