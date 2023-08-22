@@ -51,6 +51,7 @@ knit: (function(inputFile, encoding) {
 2. Adicione no bloco depois das 3 primeiras crases `{r}`
   - Se quiser que suma a mensagem de saida: `{r, message = FALSE}`
   - Se quiser apenas a saída, sem o código: `{r, echo = FALSE}``
+  - Se quiser que não mostre mensagens de erro: `{r, warning = FALSE}`
 
 - O `kable` gera as tabelas já formatadas para o documento
 
