@@ -1,0 +1,115 @@
+---
+title: "Aula 4 - Grammar of Graphics (ggplot2)"
+author: "Guilherme Oliveira Casagrande"
+date: "2023-08-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(gridExtra)
+```
+
+## Preparando os dados
+
+- Fonte de dados: [Base de dados da UBC](https://github.com/nielshanson/gapminder/blob/master/gapminderDataFiveYear.txt)
+
+```{r, echo=FALSE, message=FALSE}
+dados <- read_delim("dados.txt", delim = "\t") # Ler dados organizados de qualque arquivo
+
+# dados %>% kable()
+```
+
+- Dados longitudinais: mesmo país aparece 12 vezes (1952 a 2007)
+
+```{r, message=FALSE}
+dados_2007 <- dados %>% 
+  filter(year == 2007) 
+
+
+dados_2007 %>% 
+  head(n=20) %>%
+  kable(caption = "Dados de 2007")
+```
+## Usando o `ggplot2`
+
+### Variáveis qualitativas
+
+- [Website](https://ggplot2.tidyverse.org/)
+- Toda visualização precisa de
+  - dados, 
+  - um mapeamento estético (aes) (variável -> propriedade visual) e 
+  - forma de apresentação
+
+```{r message=FALSE}
+# Cada `+` é um layer
+
+g1 = ggplot(dados_2007, aes(x=continent, fill=continent)) + # Mapeamento: continent -> x
+  geom_bar() + # Qual o tipo de gráfico
+  labs( # Renomear legendas
+    title = "Países por continente", 
+    x = "", 
+    y = "contagem") +
+  scale_fill_brewer(palette = "Blues") + # Cores
+  theme_bw() + # Tema do gráfico
+  guides(fill = "none") # Legendas
+
+g1
+```
+
+### Variáveis quantitativas
+
+```{r}
+g2 = dados_2007 %>%
+  ggplot(aes(y=lifeExp, x=continent, fill=continent)) + 
+  geom_boxplot()
+
+g2
+```
+```{r}
+g3 = dados_2007 %>%
+  ggplot(aes(y=gdpPercap, x=lifeExp, color=continent)) + 
+  geom_point(
+      size=4,
+      alpha=0.6) +
+  labs(
+    title = "Expectativa de vida por PIV per capta", 
+    subtitle = "Dados de 2007",
+    y = "PIB per capta",
+    x ="Expectatviva de vida (anos)") +
+  theme_classic()
+
+g3
+```
+
+```{r}
+dados_paises = 
+  dados %>%
+  filter(country == "Brazil" | country == "Chile" | country == "Paraguay" | country == "Argentina")
+  
+dados_paises$País = recode(dados_paises$country, `Brazil` = "Brasil", `Paraguay` = "Paraguai")
+
+g4 = dados_paises %>%
+  ggplot(aes(y=lifeExp, x=year, color=País)) +
+  geom_line(linewidth=2) +
+  labs(
+    title = "Expectativa de vida pelo tempo por país (Argentina, Brasil, Chile, Paraguai)",
+    subtitle = "Dados de 1952 a 2007",
+    y = "Expectativa de vida",
+    x = "Ano"
+  ) +
+  guides(
+    title = "Países"
+  ) +
+  theme_bw()
+
+g4
+```
+
+## Juntando muitos gráficos com `gridExtra`
+
+```{r}
+grid.arrange(g1, g2, g3, g4, ncol = 2)
+```
