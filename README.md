@@ -3,6 +3,7 @@
 ## Relatórios gerados
 - [Aula 3](https://ryguigas0.github.io/data-exploration-espm/aula3/exemplo.html)
 - [Aula 4](https://ryguigas0.github.io/data-exploration-espm/aula4/aula4.html)
+- [Lista de exercícios 1](https://ryguigas0.github.io/data-exploration-espm/exercicios/lista1.html)
 
 ## Ferramentas necessárias
 
