@@ -75,7 +75,7 @@ g3 = dados_2007 %>%
       size=4,
       alpha=0.6) +
   labs(
-    title = "Expectativa de vida por PIV per capta", 
+    title = "Expectativa de vida por PIB per capta", 
     subtitle = "Dados de 2007",
     y = "PIB per capta",
     x ="Expectatviva de vida (anos)") +
