@@ -52,6 +52,7 @@ knit: (function(inputFile, encoding) {
   - Se quiser que suma a mensagem de saida: `{r, message = FALSE}`
   - Se quiser apenas a saída, sem o código: `{r, echo = FALSE}``
   - Se quiser que não mostre mensagens de erro: `{r, warning = FALSE}`
+  - Se quiser esconder tudo: `{r, include = FALSE}`
 
 - O `kable` gera as tabelas já formatadas para o documento
 
