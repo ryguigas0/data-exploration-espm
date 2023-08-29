@@ -1,0 +1,83 @@
+---
+title: "Aula 5"
+author: "Guilherme Oliveira Casagrande"
+date: "2023-08-29"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    social: menu
+    source_code: embed
+runtime: shiny
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r global, include=FALSE}
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+dados <- read_delim("./dados.txt", delim="\t")
+
+dados2 <- dados %>% 
+  filter(year == 2007) %>% 
+  select(continent, country, pop, year, lifeExp, gdpPercap)
+```
+
+
+```{r}
+# Reactive that returns the whole dataset if there is no brush
+selectedData <- reactive({
+  data <- brushedPoints(dados2, input$plot_brush)
+  if (nrow(data) == 0)
+    data <- dados2
+  data
+})
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Expectativa de vida por PIB per capta
+
+```{r}
+
+renderPlot({
+  
+  ggplot(dados2, aes(y=lifeExp, x=gdpPercap, color=continent)) + 
+  geom_point(
+      size=4,
+      alpha=0.6) +
+  labs(
+    title = "Expectativa de vida por PIB per capta", 
+    subtitle = "Dados de 2007",
+    y = "Expectatviva de vida (anos)",
+    x ="PIB per capta") +
+  theme_classic()
+  
+}, outputArgs = list(brush = brushOpts(id = "plot_brush")))
+```
+
+### Boxplot da expectativa de vida por continentes
+
+```{r}
+renderPlot({
+  ggplot(selectedData(), aes(y=lifeExp, x=continent, fill=continent)) + 
+  geom_boxplot()
+})
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Detalhes {data-width=400}
+
+```{r}
+renderTable({
+  selectedData()
+})
+```
+
+### Observações
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
