@@ -1,0 +1,36 @@
+---
+title: "Atividade em Grupo 1"
+author: "Guilherme, Lucas e Gabrielle"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(tidyverse)
+
+dados <- read_excel("fonte.xlsx", "Mundo_Fitness")
+```
+
+## Gráfico de barras
+
+- Benefícios de Exercício (Q10) por Frequência (Q4)
+
+```{r}
+```
+
+## Gráfico de dispersão
+
+- Atividades práticadas (Q5) por Frequência (Q4)
+
+```{r}
+```
+
+## Gráfico de boxplot
+
+- Horas de prática de exercício por semana (Q7) por motivação para praticar (Q8)
+
+```{r}
+```
