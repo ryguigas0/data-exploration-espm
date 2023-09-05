@@ -33,4 +33,17 @@ dados <- read_excel("fonte.xlsx", "Mundo_Fitness")
 - Horas de prática de exercício por semana (Q7) por motivação para praticar (Q8)
 
 ```{r}
+boxplot_data = 
+  dados %>% 
+  select("Q7", "Q8") %>%
+  drop_na %>%
+  rename(horas_semana = "Q7", motivacao = "Q8")
+
+ggplot(boxplot_data, aes(y=horas_semana, x=motivacao, fill=motivacao)) + 
+  geom_boxplot() +
+  labs(
+    title = "Horas praticadas de exercício por semana por motivação para praticar", 
+    x="Motivacao",
+    y="Horas praticadas") +
+  theme_classic()
 ```
