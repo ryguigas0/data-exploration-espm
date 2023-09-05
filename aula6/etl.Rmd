@@ -1,0 +1,85 @@
+---
+title: "Web scraping"
+author: "Cléber Figueiredo"
+date: "2023-09-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(rvest)
+library(tidyverse)
+library(writexl)
+library(readxl)
+```
+
+
+## Web scraping
+
+A coleta de dados web, ou raspagem web, é uma forma de mineração que permite a extração de dados de sites da web convertendo-os em informação estruturada para posterior análise.
+
+### Exemplo 1
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+url = "https://impostometro.com.br/home/relacaoprodutos"
+tabela = read_html(url) %>% html_table()
+roupas = data.frame(tabela[[23]])
+knitr::kable(roupas)
+
+
+```
+
+Os dados precisam ser melhorados!
+
+```{r}
+roupas = rename(roupas, Tributação = X..Tributação)
+roupas$Tributação = gsub("%", "", roupas$Tributação, fixed = TRUE)
+roupas$Tributação = gsub(",", ".", roupas$Tributação, fixed = TRUE)
+roupas$Tributação = as.numeric(roupas$Tributação)
+knitr::kable(roupas)
+
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(roupas, aes(y=reorder(Vestuário,Tributação), x=Tributação,
+                   fill = reorder(Vestuário,Tributação)))+
+  geom_bar(stat="identity") +
+  labs(y="Produtos", x="% de tributação")+
+  guides(fill="none")
+
+```
+
+### Exemplo 2
+
+- Extensão do navegador para encontrar padrões dos sites: [SelectorGadget](https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb/related?hl=pt-BR)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Carregar a página
+url = "https://www.kabum.com.br/audio"
+page = read_html(url)
+
+# Selecionar todos os elementos com a classe "Preco_normal"
+price_nodes = html_nodes(page, ".priceCard")
+
+prices <- sapply(price_nodes, html_text)
+
+# Converter o texto em números
+prices = data.frame(prices)
+prices$prices = gsub(".", "", prices$prices, fixed = TRUE)
+prices$prices = gsub(",", ".", prices$prices, fixed = TRUE)
+prices$prices = str_remove(prices$prices, "[^([0-9]+.[0-9]+)]*")
+prices$prices = as.double(prices$prices)
+
+write_xlsx(prices, "preço.xlsx")
+
+preco = read_excel("preço.xlsx")
+
+ggplot(preco, aes(y=prices)) +
+  geom_boxplot(fill = "Grey")
+```
+
