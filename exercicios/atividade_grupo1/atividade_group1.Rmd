@@ -1,6 +1,6 @@
 ---
 title: "Atividade em Grupo 1"
-author: "Guilherme, Lucas e Gabrielle"
+author: "Guilherme, Lucas, Gabrielle e Isabella"
 date: "`r Sys.Date()`"
 output:
   html_document: default
@@ -16,22 +16,61 @@ library(readxl)
 library(tidyverse)
 library(tidyr) # Para transposições de dados
 library(gridExtra)
+library(viridis)
+library(ggplot2)
 
 dados <- read_excel("fonte.xlsx", "Mundo_Fitness")
 ```
 
 ## Gráfico de barras
 
-- Benefícios de Exercício (Q10) por Frequência (Q4)
+- Idade (Q2) e Frequência (Q4)
+
+O gráfico revela a relação entre os praticantes de atividades físicas e a frequência com que realizam essas atividades. Ao analisá-lo, notamos tendências claras:
+
+Pessoas com até cerca de 10 anos de idade tendem a praticar atividades físicas com menor frequência.
+
+Indivíduos a partir dos 30 anos de idade tendem a se engajar em atividades físicas de 2 a 3 vezes por semana.
+
+Entre os 20 e 30 anos de idade, é comum observar uma frequência de 4 vezes por semana.
+
+Na faixa etária dos 20 anos superiores até os primeiros anos dos 30, é comum encontrar pessoas praticando atividades físicas 5 vezes ou mais por semana.
+
+Essa análise proporciona uma visão clara das tendências de frequência nas diferentes faixas etárias, fornecendo insights valiosos sobre os hábitos de exercício das pessoas.
 
 ```{r}
+dados_completos <- dados[complete.cases(dados), ]
+
+ggplot(dados_completos, aes(x=Q4,fill=Q4)) +
+  geom_bar() +
+  labs(title = "Relacao entre idade do praticante e frequencia de pratica",
+      x = "",
+      y = "Idade",
+      fill = "Q4") +
+  scale_fill_brewer(palette = "Reds") +
+  theme_classic() +
+  guides(fill="none")
 ```
 
 ## Gráfico de dispersão
 
-- Atividades práticadas (Q5) por Frequência (Q4)
+- Idade (Q2) Horas de prática de exercício por semana (Q7)
 
-```{r}
+Ao analisar o gráfico, é evidente que para indivíduos com 20 anos de idade, a maioria mantém uma rotina de até 15 horas semanais de exercício físico. No entanto, à medida que a frequência semanal ultrapassa as 15 horas, observa-se uma diminuição no número de pessoas comprometidas com essa prática.
+
+```{r, echo=FALSE}
+dados_completos <- dados[complete.cases(dados), ]
+
+ggplot(dados_completos, aes(x = Q2, y = Q7, color = Q1)) +
+  geom_point(size = 3, alpha = 0.8) +
+  labs(title = "Relacaoo entre Idade e Horas de Pratica de Exercicio por Semana",
+       subtitle = "Mundo fitness",
+       x = "Idade",
+       y = "Horas de prtica de exercicio por semana",
+       color = "Sexo") +
+  scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
 ```
 
 ## Gráfico de boxplot
