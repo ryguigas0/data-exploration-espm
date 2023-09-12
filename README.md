@@ -1,9 +1,11 @@
 # Análise de Dados
 
 ## Relatórios gerados
-- [Aula 3](https://ryguigas0.github.io/data-exploration-espm/aula3/exemplo.html)
-- [Aula 4](https://ryguigas0.github.io/data-exploration-espm/aula4/aula4.html)
-- [Lista de exercícios 1](https://ryguigas0.github.io/data-exploration-espm/exercicios/lista1.html)
+- [Aula 3](https://ryguigas0.github.io/data-exploration-espm/aulas/aula3/exemplo.html)
+- [Aula 4](https://ryguigas0.github.io/data-exploration-espm/aulas/aula4/aula4.html)
+- [Aula 6](https://ryguigas0.github.io/data-exploration-espm/aulas/aula6/etl.html)
+- [Lista de exercícios 1](https://ryguigas0.github.io/data-exploration-espm/exercicios/lista1/lista1.html)
+- [Atividade em grupo 1](https://ryguigas0.github.io/data-exploration-espm/exercicios/atividade_grupo1/atividade_group1.html)
 
 ## Ferramentas necessárias
 
