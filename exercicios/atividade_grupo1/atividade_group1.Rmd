@@ -2,7 +2,11 @@
 title: "Atividade em Grupo 1"
 author: "Guilherme, Lucas e Gabrielle"
 date: "`r Sys.Date()`"
-output: word_document
+output:
+  html_document: default
+  word_document: default
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_format = "all") })
 ---
 
 ```{r setup, include=FALSE}
@@ -10,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(readxl)
 library(tidyverse)
+library(tidyr) # Para transposições de dados
+library(gridExtra)
 
 dados <- read_excel("fonte.xlsx", "Mundo_Fitness")
 ```
@@ -30,7 +36,60 @@ dados <- read_excel("fonte.xlsx", "Mundo_Fitness")
 
 ## Gráfico de boxplot
 
-- Horas de prática de exercício por semana (Q7) por motivação para praticar (Q8)
+- Horas de prática de exercício por semana (Q7) por motivação para praticar (Q8): No gráfico abaixo é possível identificar que quanto mais motivos há no exercício melhor (Saúde, Estética, Bem Estar, Hobby, Locomoção e Profissão), apesar que a motivação estética ficou com a segunda maior média
 
-```{r}
+```{r echo=FALSE}
+boxplot_data = read_excel("fonte_boxplot.xlsx", "Mundo_Fitness_Q8_parsed")
+
+boxplot_data$Q7 = boxplot_data$Q7 %>% as.double()
+
+boxplot_saude = boxplot_data %>% 
+  select('Saude', 'Q7') %>%
+  filter(`Saude` != "NA") %>%
+  mutate(saude= "saude")
+
+g1 = ggplot(boxplot_saude, aes(x=saude, y=Q7, fill=saude)) + 
+  geom_boxplot() +
+  labs(
+    y="Horas praticadas", x="") +
+  
+  theme_classic()
+
+boxplot_estetica = boxplot_data %>% 
+  select('Estetica', 'Q7') %>%
+  filter(`Estetica` != "NA") %>%
+  mutate(estetica= "estetica")
+
+g2 = ggplot(boxplot_estetica, aes(x=estetica, y=Q7, fill=estetica)) + 
+  geom_boxplot() +
+  labs(
+    y="Horas praticadas", x="") +
+  
+  theme_classic()
+
+boxplot_bem_estar = boxplot_data %>% 
+  select('Bem Estar', 'Q7') %>%
+  filter(`Bem Estar` != "NA") %>%
+  mutate(bem_estar= "bem_estar")
+
+g3 = ggplot(boxplot_bem_estar, aes(x=bem_estar, y=Q7, fill=bem_estar)) + 
+  geom_boxplot() +
+  labs(
+    y="Horas praticadas", x="") +
+  
+  theme_classic()
+
+boxplot_todas = boxplot_data %>% 
+  select('Todas', 'Q7') %>%
+  filter(`Todas` != "NA") %>%
+  mutate(todas= "todas")
+
+g4 = ggplot(boxplot_todas, aes(x=todas, y=Q7, fill=todas)) + 
+  geom_boxplot() +
+  labs(
+    y="Horas praticadas", x="") +
+  theme_classic()
+
+grid.arrange(g1, g2, g3, g4, ncol = 2)
 ```
+
