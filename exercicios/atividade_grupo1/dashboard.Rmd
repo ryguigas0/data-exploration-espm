@@ -1,12 +1,13 @@
 ---
-title: "Atividade em Grupo 1"
+title: "Dashboard"
 author: "Guilherme, Lucas, Gabrielle e Isabella"
 date: "`r Sys.Date()`"
-output:
-  html_document: default
-  word_document: default
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding, output_format = "all") })
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    social: menu
+    source_code: embed
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
@@ -21,6 +22,9 @@ library(ggplot2)
 
 dados <- read_excel("fonte.xlsx", "Mundo_Fitness")
 ```
+
+Column {data-width=300}
+-----------------------------------------------------------------------
 
 ## Gráfico de barras
 
@@ -52,6 +56,9 @@ ggplot(dados_completos, aes(x=Q4,fill=Q4)) +
   guides(fill="none")
 ```
 
+Column {data-width=300}
+-----------------------------------------------------------------------
+
 ## Gráfico de dispersão
 
 - Idade (Q2) Horas de prática de exercício por semana (Q7)
@@ -72,6 +79,9 @@ ggplot(dados_completos, aes(x = Q2, y = Q7, color = Q1)) +
   theme_minimal() +
   theme(legend.position = "bottom")
 ```
+
+Column {data-width=300}
+-----------------------------------------------------------------------
 
 ## Gráfico de boxplot
 
