@@ -61,6 +61,8 @@ Ao analisar o gráfico, é evidente que para indivíduos com 20 anos de idade, a
 ```{r, echo=FALSE}
 dados_completos <- dados[complete.cases(dados), ]
 
+dados_completos$Q7 = dados_completos$Q7 %>% as.double()
+
 ggplot(dados_completos, aes(x = Q2, y = Q7, color = Q1)) +
   geom_point(size = 3, alpha = 0.8) +
   labs(title = "Relacaoo entre Idade e Horas de Pratica de Exercicio por Semana",
