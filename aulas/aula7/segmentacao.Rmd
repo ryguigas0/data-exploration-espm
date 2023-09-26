@@ -1,0 +1,118 @@
+---
+title: "Segmentação"
+author: "Guilherme Oliveria Casagrande"
+date: "2023-09-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(knitr)
+library(cluster)
+library(tidyverse)
+```
+
+### Refrigerantes - segmentação
+
+```{r, include = FALSE}
+
+dados = read_excel("refrigerantes.xlsx")
+dados1 = dados[,3:9]
+dados2 = scale(dados1)
+
+```
+
+
+Um estudo com algumas marcas de refrigerantes gostaria de identificar quais são os fatores que mais agradam o consumidor na hora da compra.
+
+- X1. A marca Y tem um sabor refrescante (sabor)
+- X2. Eu prefiro a marca Y porque tem menos calorias que outras bebidas (saúde)
+- X3. A marca Y sacia minha sede imediatamente (sede)
+- X4. Eu gosto do sabor suave da marca Y (sabor)
+- X5. Eu prefiro tomar a marca Y após os exercícios e esportes porque ela me da energia (saúde)
+- X6. A marca Y tem sabor único (sabor)
+- X7. Eu prefiro tomar a marca Y quando eu estou com muita sede (sede)
+
+```{r, echo = TRUE, message = FALSE, warning=FALSE}
+kable(head(dados1), caption = "Dados da pesquisa")
+```
+
+Para segmentar, precisamos sempre realizar padronização!
+
+```{r, echo = TRUE, message = FALSE, warning=FALSE}
+options(digits = 2)
+kable(head(dados2), caption = "Dados padronizados")
+```
+
+O próximo passo é encontrar quem é parecido com quem...
+E plotar em um grafico chamado dendrograma.
+
+```{r, echo = TRUE, message = FALSE, warning=FALSE}
+distancia = dist(dados2)
+
+h = hclust(distancia, method = "complete")
+
+plot(h, ylab = "Distancia euclidiana")
+rect.hclust(h, k = 3)
+```
+
+Como saber quais as marcas avaliadas?
+
+```{r, echo = TRUE, message = FALSE, warning=FALSE}
+marcas = dados$MARCA
+plot(h, labels = marcas, ylab = "Distancia euclidiana")
+rect.hclust(h, k = 3)
+```
+
+Parece que cada um dos segmentos foi determinado por uma marca distinta.
+
+Existem outras maneiras de se analisar os segmentos. Uma delas é via o mapa de calor.
+
+```{r, echo = TRUE, message = FALSE, warning=FALSE}
+heatmap(dados2, labRow = marcas)
+```
+
+ - X7 e X3 são variaveis parecidas (sede);
+ - X5 e X2 (saúde);
+ - X1, X4 e X6 (sabor).
+ 
+Pelas manchas no mapa de calor, podemos perceber qual o perfil de cada cluster.
+ 
+ Cluster Sprite: valoriza sabor e saúde;
+ Cluster Fanta: valoriza sede e saúde;
+ Cluster Coca: valoriza sabor.
+ 
+Para fazer com que a segmentação seja incorporada à base de dados, é preciso utilizar o método das k-médias. Esse método de segmentação não é hierarquico e necessita da quantidade de grupos.
+
+```{r, echo = TRUE, message = FALSE, warning=FALSE}
+grupos = kmeans(dados2, 3) # quantos clusters?
+
+dados$cluster = grupos$cluster # associa o numero do cluster aos dados
+
+# library(cluster)
+clusplot(dados2, grupos$cluster, color=TRUE, shade=TRUE, labels=2, lines=0, main = "Clustering")
+
+# write.csv2(dados, "clusters.csv", row.names = FALSE) # gera o csv para usar no excel
+```
+
+Depois que conhecemos os segmentos, podemos fazer uma analise dos perfis dos grupos.
+
+```{r , echo = TRUE, message = FALSE}
+tabela1 = table(dados$MARCA, dados$cluster)
+kable(tabela1, caption = "Predominancia de marca por grupo")
+
+tabela2 = dados %>% mutate(sabor = (X1 + X4 + X6)/3,
+                           sede = (X3 + X7)/2,
+                           saude = (X2 + X5)/2) %>%
+        group_by(cluster) %>%
+        summarise(sabor = round(mean(sabor),2), 
+                  sede = round(mean(sede),2), 
+                  saude = round(mean(saude),2), 
+                  n = n())
+kable(tabela2, caption = "Analise dos perfis dos grupos")
+```
+
+As analises acima precisam coincidir com as analises que foram feitas no mapa de calor.
+ 
