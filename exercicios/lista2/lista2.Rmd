@@ -1,0 +1,107 @@
+---
+title: "Lista 2"
+author: "Guilherme Casagrande"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(tidyverse)
+```
+
+# Lista 2 de exercícios
+
+1. Um diretor de uma instituição financeira que presta serviços para agências bancárias em Barueri deseja agrupar os municípios abaixo de acordo com a quantidade de agências e o valor do caixa dentro de cada município.
+
+| Município             | Agências | Caixa (R$ MM) |
+| :--------------------- | :-------- | :------------- |
+| BARUERI               | 19       | 29,21         |
+| GUARULHOS             | 27       | 48,99         |
+| SAO BERNARDO DO CAMPO | 22       | 33,43         |
+| SANTO ANDRE           | 26       | 44,23         | 
+
+  a. Considerando as variáveis acima, obtenha a matriz de distância (calcular a distância Euclidiana). Apresente-a.
+
+```{r, echo=FALSE}
+dados = read_excel("lista2.xlsx", sheet = "Ex1")
+
+mun_age_cai = dados[1:3] # Remover as colunas de latitude e longitude
+  
+age_cai = data.frame(mun_age_cai, row.names = 1) # cria uma tabela com os nomes dos municipios nas colunas
+  
+dist( # raíz((x1 - média(x))^2 + (x2 - média(x))^2 + ...) -> Similaridade entre as observações
+  scale( # ((x - média) / desvio) para cada valor -> Padronização
+    age_cai))
+```
+  O município com a menor distância euclidiana em relação a Barueri é São Bernardo do Campo
+  
+  b. Qual o local mais parecido com Barueri para se abrir uma filial da instituição financeira? Use o código abaixo para apresentar a solução:
+
+```{r, echo=FALSE}
+library(leaflet)
+
+mapa <- leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(lng=dados$Longitude, lat=dados$Latitude, 
+             popup=c("Matriz","Descarte","Possível filial","Descarte"))
+
+mapa
+```
+
+2. Um recrutador de RH deseja agrupar os candidatos a uma determinada vaga em três grupos considerando duas variáveis: o tempo de formação do candidato e o tempo que o candidato permaneceu na empresa anterior. A Tabela apresenta os valores das variáveis para os cinco candidatos que investiram uma candidatura.
+
+| Candidato | Tempo de formação | Tempo na empresa  anterior |
+| :--------- | :----------------- | :-------------------------- |
+| 1         | 2                 | 2                          |
+| 2         | 3                 | 4                          |
+| 3         | 12                | 12                         |
+| 4         | 8                 | 16                         |
+| 5         | 12                | 2                           |
+
+  a.Agrupe-os em três grupos e trace o perfil de cada grupo.
+```{r, echo=FALSE}
+dados = read_excel("lista2.xlsx", sheet = "Ex2")
+
+distancia = dist(scale(dados))
+
+h = hclust(distancia, method = "complete")
+
+plot(h, ylab = "Distancia euclidiana")
+rect.hclust(h, k = 3)
+```
+
+O perfil do primeiro grupo (candidatos 1 e 2) é recém formados com baixa experiência, o segundo grupo (candidato 5) é um funcionário freelancer e o último grupo (candidatos 3 e 4) são funcionários sêniors da empresa anterior.
+
+3. Um técnico ajustou uma análise de cluster para separar jogadores de futebol, integrantes dos melhores clubes e seleções do mundo, em grupos. Essa avaliação levou em conta a idade dos jogadores, valor de mercado e salário de 2019, e algumas avaliações como reputação internacional e classificação geral e potencial (escores).
+  a. Qual jogador é o mais distinto de todos os outros?
+```{r, echo = FALSE, message=FALSE}
+dados = read_excel("lista2.xlsx", sheet = "Ex3")
+
+jogadores = dados[c(1, 4:9)] # Remover as colunas de latitude e longitude
+  
+jogadores = data.frame(jogadores, row.names = 1)
+
+distancia = dist(scale(jogadores))
+
+h = hclust(distancia, method = "complete")
+
+plot(h, labels = dados$Name, ylab = "Distancia euclidiana")
+rect.hclust(h, k = 4)
+```
+
+O jogador mais distinto de todos é Ibrahimović
+
+  b. Exclua o jogador mais distinto de todos. Considerando apenas 3 grupos, quais jogadores estão em cada grupo?
+
+| Grupo   | Jogadores |
+|:------- |:--------- |
+| Grupo 1 | Godin, Dybala, Kane, Kanté, Stegen, Courtois, Lewandowski, Griezmann          |
+| Grupo 2 | Suárez, David Silva, Modríc, Sergio Ramos|
+| Grupo 3 | Messi, Cristiano Ronaldo, Neymar Jr, De Gea, De Bruyne, Hazard |
+
+4. Leia o texto acerca da Distância de Gower e segmentação com variáveis categorizadas. Reproduza-o no seu computador.
+
+
