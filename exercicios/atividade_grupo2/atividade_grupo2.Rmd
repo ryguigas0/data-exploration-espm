@@ -1,7 +1,7 @@
 ---
 title: "Escalonamento dimensional de marcas de achocolatado em pó"
 author: GABRIELLE WEYNE PEDROSA, GUILHERME OLIVEIRA CASAGRANDE, ISABELLA FRANÇA VALLAND, LUCAS MARQUES BARROS FILGUEIRAS, PEDRO LUCAS GONÇALVES BARROS
-date: "`r Sys.Date()`"
+date: "2023-10-10"
 output: html_document
 ---
 
@@ -13,8 +13,9 @@ library(readxl)
 library(ggplot2)
 library(factoextra)
 
-dados <- read_excel("achocolatados.xlsx", sheet = "Medias")
-df = data.frame(dados, row.names = 1)
+dados_calor <- read_excel("achocolatados-base calor.xlsx")
+dados_medias <- read_excel("achocolatados.xlsx", sheet = "Medias")
+df = data.frame(dados_medias, row.names = 1)
 ```
 
 ## Marcas e Pontos de paridade escolhidos
@@ -34,17 +35,15 @@ kable(df)
 ## Mapa de calor
 
 ```{r echo=FALSE}
-res.pca = prcomp(df)
-
-fviz_pca_ind(res.pca, 
-             col.ind = "cos2", 
-             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
-             repel = TRUE)
+marcas = dados_calor$Marca
+dados_pad = scale(dados_calor[,2:4])
+heatmap(dados_pad, labRow = marcas)
 ```
-
 ## Mapa de posicionamento
 
 ```{r echo=FALSE}
+res.pca = prcomp(df)
+
 fviz_pca_biplot(res.pca, 
                 col.var = "#2E9FDF", # Cor das variáveis
                 col.ind = "#696969", # Cor dos indivíduos
