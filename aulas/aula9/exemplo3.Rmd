@@ -1,0 +1,88 @@
+---
+title: "Regressão linear - Ex 3 Vendas e despesas promocionais"
+author: "GUILHERME OLIVEIRA CASAGRANDE"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(knitr)
+
+dados = read_excel("fonte.xlsx", sheet = "Receita")
+```
+
+### O problema
+
+Uma grande rede de supermercados deseja determinar o efeito de
+uma promoção sobre as vendas. Para isso, obteve dados em 15
+pontos de venda. As informações obtidas referem-se às despesas
+promocionais relativas e às vendas no PDV.
+
+### a) Elabore um gráfico de despesas relativas versus vendas. Interprete o diagrama.
+
+```{r}
+
+library(ggplot2)
+
+ggplot(dados, aes(x = Despesas, y = Vendas)) +
+  geom_point(alpha = 0.15, size = 3) +
+  labs(title = "Relacao entre variaveis despesas e vendas") +
+  geom_smooth(method = "lm")
+
+```
+É possível interpretar do diagrama que a medida que aumentam o valor das despesas relativas, as vendas aumentam
+
+
+### b) Encontre a reta de regressão. Realize toda a parte inferencial.
+
+```{r}
+x = dados$Despesas
+y = dados$Vendas
+corr = round(cor(x, y), 2)
+
+corr
+```
+
+O valor da correlação é 0.99, indicando um forte relação entre as vendas e as despesas relativas
+
+```{r}
+modelo = lm(y ~ x) 
+resumo = summary(modelo)
+
+library(knitr)
+
+print("Equacao")
+# Para obter os coeficientes com duas casas decimais
+kable(round(resumo$coefficients,2), caption = "Equacao de regressao")
+
+print("Limites")
+# Para obter os LI e LS dos coeficientes com duas casas decimais
+kable(round(confint(modelo, level = 0.95),2), caption = "Limites")
+
+# LEGENDA
+# x -> coef angular (a do y = ax + b)
+# (intercept) -> coef linear ou intercecao (b do y = ax + b)
+```
+Logo a fórmula de regressão das vendas é:
+
+$$ vendas = -7,93 + 1,15*despesas $$
+
+### c) Interprete os coeficientes de regressão.
+
+(De acordo com o coef angular, que é 1,15) Para cada R$1000,00 investidos haverá mais 15% de vendas, em média. Assim o retorno de investimento pode ser qualquer valor entre 7% (1,07 na tabela de limites) e 23% (1,23 na tabela de limites) com 95% (97,5% - 2,5%) de confiança
+
+## Exemplo de previsão no modelo
+
+Para prever o valor das vendas para um investimento de R$1000,00 é necessário o código abaixo.
+
+```{r}
+newdata = data.frame(x = c(1000))
+
+prev_data = predict(modelo, newdata, interval = "confidence", level = 0.95)
+
+kable(prev_data, caption="Valores de previsao")
+```
+
