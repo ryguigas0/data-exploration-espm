@@ -1,0 +1,76 @@
+---
+title: "Exercício 2 - Óleo diesel"
+author: "GUILHERME OLIVEIRA CASAGRANDE"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## a) Construa um diagrama para a série e verifique se há presença de sazonalidade.
+
+```{r}
+########## GRÁFICO GERAL DA TENDÊNCIA ###########
+library(readxl)
+
+dados=read_excel("diesel.xlsx", sheet = "Diesel")
+
+# ts -> transforma em série temporal (temporal series)
+diesel = ts(dados$Consumo, start = c(2011, 1), frequency = 12)
+
+plot(diesel, main = "Consumo (m3) de diesel de 2011 a 2015")
+```
+
+O diagrama acima aponta que a séria possui presença de sazonalidade
+
+## b) Há alguma mudança estrutural? Se houver, elimine o período com comportamento distinto do mais atual na próxima etapa.
+
+```{r}
+########## COMPONENTES DA SÉRIE ###########
+decomp <- decompose(protetor, type = "multiplicative")
+
+plot(decomp)
+options(digits = 2)
+
+decomp$figure # O quanto as buscas estão acima ou abaixo da média móvel (>1 é acima, <1 é abaixo) dos últimos 12 meses, a some dos índices devem dar a quantidade de períodos que formam a sazonal (no caso12)
+sum(decomp$figure)
+
+plot(decomp$figure,
+     type = 'b',
+     xlab = 'Mês',
+     ylab = 'Índice de sazonalidade',
+     col = 'blue')
+```
+
+Houve uma mudança estrutural visto que no gráfico "trend" da decomposição ele mostra que a tendência estava em crescimento e depois estabilizou
+
+
+## c) Apresente a sazonalidade da série.
+
+A sazonalidade da série é anual, vista no gráfico "seasonal" da decomposição
+
+
+## d) Estime o consumo de óleo diesel para todos os meses de 2016.
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+########### PREVISÃO ###############
+library(forecast)
+model <- auto.arima(diesel) # função de ML para usar o ARIMA (auto-regressivo integrado com as medias moveis)
+# Descritivo pela análise
+# Preditivo por tentar prever o futuro
+
+# summary(model)
+
+f <- forecast(model, h = 19)
+library(ggplot2)
+autoplot(f, xlim=c(2011, 2017))
+
+library(knitr)
+options(digits = 4)
+kable(f, caption = "Valores previstos")
+```
+
+
+

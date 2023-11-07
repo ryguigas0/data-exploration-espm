@@ -1,0 +1,102 @@
+---
+title: "Análise de séries temporais via regressão"
+author: "GUILHERME OLIVEIRA CASAGRANDE"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Leis das previsões
+
+1. Previsões são sempre aproximações
+2. Mais longe no futuro, maior imprecisão
+3. Previsão com dados agregados tem menor incerteza que detalhados
+
+## Ciclos, tendências e sazonalidade
+
+- Ciclos são repetições de padrões
+- Tendências seguem uma direção
+- Sazonalidade é um ciclo regular curto
+
+## Médias Móveis
+
+Elimar outliers da série temporal
+
+- Média do curto prazo -> 10 temporais (exponencial)
+- Média no longo prazo -> 45 temporais (aritimético)
+- Se as médias cruzarem subindo -> Vai aumentar
+- Se as médias cruzarem descendo -> Vai diminuir
+
+## Como encontrar dados para tendências
+- [Google trends](https://trends.google.com/trends/explore?date=now%201-d&geo=BR&q=protetor%20solar&hl=pt): Apertar o botão de download para baixar um CSV
+
+## O código
+
+### Leitura dos dados
+
+```{r}
+########## GRÁFICO GERAL DA TENDÊNCIA ###########
+library(readxl)
+
+dados=read_excel("protetor_solar.xlsx")
+
+# ts -> transforma em série temporal (temporal series)
+protetor = ts(dados$`protetor solar (Brasil):`, start = c(2018,1), frequency = 12)
+
+plot(protetor, main = "Buscas em % pelo termo protetor solar")
+```
+
+No gráfico acima é possível ver que a sazonalidade ocorre em cada 12 observações
+
+### Decomposição
+
+```{r}
+########## COMPONENTES DA SÉRIE ###########
+decomp <- decompose(protetor, type = "multiplicative")
+
+plot(decomp)
+options(digits = 2)
+
+decomp$figure # O quanto as buscas estão acima ou abaixo da média móvel (>1 é acima, <1 é abaixo) dos últimos 12 meses, a some dos índices devem dar a quantidade de períodos que formam a sazonal (no caso12)
+sum(decomp$figure)
+
+plot(decomp$figure,
+     type = 'b',
+     xlab = 'Mês',
+     ylab = 'Índice de sazonalidade',
+     col = 'blue')
+```
+
+A série é decomposta na média móvel e cria um gráfico de quão perto os períodos seguem a média móvel (necessário apenas para fazer a sazonalidade)
+
+### Previsão
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+########### PREVISÃO ###############
+library(forecast)
+model <- auto.arima(protetor) # função de ML para usar o ARIMA (auto-regressivo integrado com as medias moveis)
+# Descritivo pela análise
+# Preditivo por tentar prever o futuro
+
+# summary(model)
+
+f <- forecast(model, h = 19)
+library(ggplot2)
+autoplot(f, xlim=c(2022,2025))
+
+library(knitr)
+options(digits = 4)
+kable(f, caption = "Valores previstos")
+```
+
+- Linha central: previsão realista é a média
+- Azul escuro: Confiança de 80%
+- Azul claro: Confiança de 95% (mais confiança porque abrange mais possibilidades)
+
+- Previsões geradas
+  - realista (point forecast)
+  - otimista (hi 80 e hi 95)
+  - pessimista (lo 95 lo 80)
