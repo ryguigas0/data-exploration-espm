@@ -1,0 +1,62 @@
+---
+title: "Regressão Linear Múltipla - Exemplo 3"
+author: "GUILHERME OLIVEIRA CASAGRANDE"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(knitr)
+
+dados <- read_xlsx("aula11.xlsx", sheet = "Exemplo3")
+```
+
+## Descrição do problema
+
+O departamento de da LA ROCHE (INVENTADO, não faço ideia se eles intentam fazer isso), interessado em ex andir sua participação de mercado, abocanhando a nova CLASSE MEPDIA brasileira, financiou um projeto para entender como os consumidores se posicionam frente ao consumo de protetores solares. 
+
+Para tanto, um brainstorming foi realizado para que o departamento chegasse a conclusão de quais atributos deveriam ser considerados na pesquisa.
+
+O grupo, ao final do dia elencou três possíveis concorrentes (AVON, NATURA e O BOTICARIO).
+
+Concluiu que seria importante estudar a influência do preço na decisão de compra (sabem que essa nova CLASSE C não é fiel à marca) e estudar os dois rodutos mais vendidos: com fator 30 de proteção (FPS 30) e 50 (FPS 58).
+
+## Análise
+
+- Resposta: preferência
+- Referências: Boticário, FPS 30, Preço R$30
+
+## Regressão para prescrição (entender o cenário)
+
+### Transformando variáveis de categoria em dummys
+
+```{r}
+# Primeiro sempre a referência
+dados$Marca = factor(dados$Marca, levels = c("O Boticário", "Avon", "Natura"))
+dados$FPS = factor(dados$FPS, levels = c("FPS 30", "FPS 50"))
+dados$Preco = factor(dados$Preco, levels = c(30, 60, 90))
+# Equivalente de criar as colunas para todos os valores menos a referencia e color 1 se esta presente ou 0 se nao
+```
+
+### Criando o modelo
+
+```{r}
+modelo = lm(Preferencia ~ Marca + FPS + Preco, data = dados)
+
+resultado = summary(modelo)
+
+kable(round(resultado$coefficients, 2), caption = "Resultados finais")
+```
+
+Os coeficientes das variáveis estão na coluna `Estimate`:
+
+- A marca Avon (-3.17) possui um maior decréssimo em preferência do que a marca Natura (-1.5) e a boticário é a mais preferida por todas as outras diminuirem em relação a ela
+- O FPS 50 (1.11) é mais prefereido que o FPS 30 visto que possui um acréscimo médio maior que a preferência
+- Quanto maior o preço em relação ao 30, diminui a preferência (coeficientes negativos -2.17 e -4.5)
+
+## Conclusão
+
+Deverá ser produzido um protetor com o menor custo, com o maior FPS e maior semelhança com a marca Boticário possíveis
