@@ -18,6 +18,10 @@ library(GGally)    # Novo: análise de correlação
 library(car)       # Novo: Indica a presença de multicolinearidade (calculo do VIF)
 library(MASS)      # Novo: Selecionar variáveis
 library(lmtest)    # Novo: Testes específicos de regressão
+library(readxl)
+library(dplyr)
+library(RColorBrewer)
+library(viridis)
 
 opts_chunk$set(echo = TRUE)
 
@@ -98,18 +102,43 @@ Gráfico de dispersão
 Row {data-width=350}
 -----------------------------------------------------------------------
 
+
 ```{r message = FALSE, warning = FALSE, echo=FALSE}
-dados <- fonte[,1:8] %>% filter(source == 'vivareal') %>% drop_na()
+dados <- read_excel("todososimoveiseditado.xlsx")[,4:13] 
 
-x = fonte$total.area
-y = fonte$price
-ggplot(dados, aes(x = total.area, y = price)) +
-  geom_point(alpha = 0.15, size = 3) +
-  labs(title = "Relacao entre variaveis")
+dados$dorms = NULL
+dados$toilets = NULL
+dados$parking = NULL
+dados$address = NULL
+dados$lat = NULL
+dados$lng = NULL
 
+dados = drop_na(dados)
+
+# Calcule as médias por bairro
+dados_agrupados <- dados %>%
+  group_by(Bairro) %>%
+  summarise_at(vars(price, `total area`), mean)
+
+dados_agrupados$media_preco = dados_agrupados$price
+dados_agrupados$media_area = dados_agrupados$`total area`
+
+# Selecione os top 10 bairros com maiores preços
+top_10_bairros <- dados_agrupados %>%
+  arrange(desc(media_preco)) %>%
+  filter(Bairro != 'Higienópolis') %>%
+  head(6)
+
+# Crie o gráfico de barras
+paleta_cores = brewer.pal(9, "Blues")
+
+ggplot(top_10_bairros, aes(x = Bairro, y = media_area, fill = media_area)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  scale_fill_viridis_c() +
+  labs(title = "Média de Preços e Área Total por Bairro",
+       x = "Bairro",
+       y = "Média de Área Total") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
 ```
-
-Análise preditiva
-=====================================
-
-## ETAPA DESCRITIVA
