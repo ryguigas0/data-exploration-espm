@@ -109,7 +109,7 @@ As hipóteses são:
 Aqui o p-value: 0.01475 indica que o modelo é útil.
 
 ```{r, echo = FALSE}
-kable(round(resultado3$coefficients,2), caption = "Resultados finais")
+kable(round(resultado3$coefficients,4), caption = "Resultados finais")
 
 ```
 

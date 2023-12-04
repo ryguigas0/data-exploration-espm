@@ -1,0 +1,115 @@
+---
+title: "Regressão linear"
+author: "GUILHERME OLIVEIRA CASAGRANDE"
+date: "`r Sys.Date()`"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    social: menu
+    source_code: embed
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(knitr)
+library(ggplot2)   # Fazer gráficos
+library(GGally)    # Novo: análise de correlação
+library(car)       # Novo: Indica a presença de multicolinearidade (calculo do VIF)
+library(MASS)      # Novo: Selecionar variáveis
+library(lmtest)    # Novo: Testes específicos de regressão
+
+opts_chunk$set(echo = TRUE)
+
+fonte <- read.csv("fonte.csv", sep = ";")
+```
+
+
+Regressão linear
+=====================================
+
+Row {data-width=350}
+-----------------------------------------------------------------------
+
+## Preparação dos dados
+
+```{r}
+dados = fonte[,1:8] %>% filter(source == 'vivareal') %>% drop_na()
+
+dados$source_id = NULL
+dados$timestamp = NULL
+dados$source = NULL
+```
+
+Row {data-width=350}
+-----------------------------------------------------------------------
+
+## Etapa descritiva
+```{r, echo=FALSE}
+ggpairs(dados)
+```
+
+Row {data-width=350}
+-----------------------------------------------------------------------
+
+```{r, echo=FALSE}
+modelo1 = lm(price ~ total.area + dorms
+             + parking + toilets, data = dados)
+kable(round(vif(modelo1),2), caption = "VIF com todas as variáveis")
+```
+
+Row {data-width=350}
+-----------------------------------------------------------------------
+
+```{r, echo=FALSE}
+# Removendo toilets
+modelo2 = lm(price ~ total.area + dorms
+             + parking, data = dados)
+kable(round(vif(modelo2),2), caption = "VIF sem toilets")
+```
+
+Row {data-width=350}
+-----------------------------------------------------------------------
+
+## StepAIC
+
+```{r, echo=FALSE}
+selecao = stepAIC(modelo2, direction = "backward")
+```
+
+Row {data-width=350}
+-----------------------------------------------------------------------
+
+## Modelo
+
+```{r, echo=FALSE}
+modelo3 = lm(selecao$call, data = dados)
+
+resultado = summary(modelo3)
+
+kable(round(resultado$coefficients,2), caption = "Resultados finais")
+```
+
+Gráfico de dispersão
+=====================================
+
+## ETAPA DESCRITIVA
+
+Row {data-width=350}
+-----------------------------------------------------------------------
+
+```{r message = FALSE, warning = FALSE, echo=FALSE}
+dados <- fonte[,1:8] %>% filter(source == 'vivareal') %>% drop_na()
+
+x = fonte$total.area
+y = fonte$price
+ggplot(dados, aes(x = total.area, y = price)) +
+  geom_point(alpha = 0.15, size = 3) +
+  labs(title = "Relacao entre variaveis")
+
+```
+
+Análise preditiva
+=====================================
+
+## ETAPA DESCRITIVA
