@@ -1,13 +1,8 @@
 ---
-title: "Regressão linear"
-author: "GUILHERME OLIVEIRA CASAGRANDE"
-date: "`r Sys.Date()`"
-output: 
-  flexdashboard::flex_dashboard:
-    orientation: rows
-    social: menu
-    source_code: embed
-runtime: shiny
+title: "Untitled"
+author: "Guilherme Oliveira Casagrande"
+date: "2023-12-04"
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
@@ -29,15 +24,11 @@ fonte <- read.csv("fonte.csv", sep = ";")
 ```
 
 
-Regressão linear
-=====================================
-
-Row {data-width=350}
------------------------------------------------------------------------
+## Regressão linear
 
 ## Preparação dos dados
 
-```{r}
+```{r, message = FALSE, warning = FALSE, echo=FALSE}
 dados = fonte[,1:8] %>% filter(source == 'vivareal') %>% drop_na()
 
 dados$source_id = NULL
@@ -45,48 +36,38 @@ dados$timestamp = NULL
 dados$source = NULL
 ```
 
-Row {data-width=350}
------------------------------------------------------------------------
 
 ## Etapa descritiva
-```{r, echo=FALSE}
+```{r, message = FALSE, warning = FALSE, echo=FALSE}
 ggpairs(dados)
 ```
 
-Row {data-width=350}
------------------------------------------------------------------------
 
-```{r, echo=FALSE}
+```{r, message = FALSE, warning = FALSE, echo=FALSE}
 modelo1 = lm(price ~ total.area + dorms
              + parking + toilets, data = dados)
 kable(round(vif(modelo1),2), caption = "VIF com todas as variáveis")
 ```
 
-Row {data-width=350}
------------------------------------------------------------------------
 
-```{r, echo=FALSE}
+```{r, message = FALSE, warning = FALSE, echo=FALSE}
 # Removendo toilets
 modelo2 = lm(price ~ total.area + dorms
              + parking, data = dados)
 kable(round(vif(modelo2),2), caption = "VIF sem toilets")
 ```
 
-Row {data-width=350}
------------------------------------------------------------------------
 
 ## StepAIC
 
-```{r, echo=FALSE}
+```{r, message = FALSE, warning = FALSE, echo=FALSE}
 selecao = stepAIC(modelo2, direction = "backward")
 ```
 
-Row {data-width=350}
------------------------------------------------------------------------
 
 ## Modelo
 
-```{r, echo=FALSE}
+```{r, message = FALSE, warning = FALSE, echo=FALSE}
 modelo3 = lm(selecao$call, data = dados)
 
 resultado = summary(modelo3)
@@ -94,13 +75,7 @@ resultado = summary(modelo3)
 kable(round(resultado$coefficients,2), caption = "Resultados finais")
 ```
 
-Gráfico de dispersão
-=====================================
-
-## ETAPA DESCRITIVA
-
-Row {data-width=350}
------------------------------------------------------------------------
+## Gráfico de dispersão
 
 
 ```{r message = FALSE, warning = FALSE, echo=FALSE}
@@ -144,14 +119,9 @@ ggplot(top_10_bairros, aes(x = Bairro, y = media_area, fill = media_area)) +
 ```
 
 
-Clusterização
-=====================================
+## Clusterização
 
-
-Row {data-width=350}
------------------------------------------------------------------------
-
-```{r}
+```{r, message = FALSE, warning = FALSE, echo=FALSE}
 library(cluster)
 
 dados3 <- read_excel("todososimoveiseditado.xlsx")[,4:13] 
@@ -178,49 +148,14 @@ distancia = dist(dados_cluster)
 h = hclust(distancia, method = "complete")
 
 plot(h, ylab = "Distancia euclidiana")
-rect.hclust(h, k = 30)
+rect.hclust(h, k = 5)
 ```
 
-```{r}
-grupos = kmeans(dados_cluster, 3) # quantos clusters?
+```{r, , message = FALSE, warning = FALSE, echo=FALSE}
+grupos = kmeans(dados_cluster, 5) # quantos clusters?
 
 dados3$cluster = grupos$cluster # associa o numero do cluster aos dados
 
 # library(cluster)
 clusplot(dados3, grupos$cluster, color=TRUE, shade=TRUE, labels=2, lines=0, main = "Clustering")
-```
-
-```{r}
-dados3 <- read_excel("todososimoveiseditado.xlsx")[,4:13]
-
-dados3$dorms = NULL
-dados3$toilets = NULL
-dados3$parking = NULL
-dados3$address = NULL
-dados3$lat = NULL
-dados3$lng = NULL
-
-str(dados3)
-
-dados3 <- dados3[, c("Type", "price")]
-
-dados3 = drop_na(dados3)
-
-dados3$Tipo <- factor(dados3$Type, levels = c(1, 2, 3, 4), labels = c("Casa", "Prédio", "Terreno", "Apartamento"))
-
-dados3$price <- scale(dados3$price)
-
-num_clusters <- 3
-modelo_clusters <- kmeans(dados3[, 2], centers = num_clusters)
-
-dados3$Cluster <- as.factor(modelo_clusters$cluster)
-
-plot(
-  dados3$price, 
-  col = dados3$Cluster, 
-  pch = 16, 
-  main = "Cluster de Tipos de Imóveis por price", 
-  xlab = "price", 
-  ylab = "Tipo"
-)
 ```

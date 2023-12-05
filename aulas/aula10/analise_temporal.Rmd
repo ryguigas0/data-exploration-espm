@@ -81,7 +81,7 @@ model <- auto.arima(protetor) # função de ML para usar o ARIMA (auto-regressiv
 # Descritivo pela análise
 # Preditivo por tentar prever o futuro
 
-# summary(model)
+summary(model)
 
 f <- forecast(model, h = 19)
 library(ggplot2)
