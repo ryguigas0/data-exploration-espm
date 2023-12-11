@@ -94,6 +94,13 @@ resultado = summary(modelo3)
 kable(round(resultado$coefficients,2), caption = "Resultados finais")
 ```
 
+Row {data-width=350}
+-----------------------------------------------------------------------
+
+$$
+Preço = 4297.17 * area + 18894426.70
+$$
+
 Gráfico de dispersão
 =====================================
 
@@ -127,7 +134,7 @@ dados_agrupados$media_area = dados_agrupados$`total area`
 top_10_bairros <- dados_agrupados %>%
   arrange(desc(media_preco)) %>%
   filter(Bairro != 'Higienópolis') %>%
-  head(6)
+  head(5)
 
 # Crie o gráfico de barras
 paleta_cores = brewer.pal(9, "Blues")

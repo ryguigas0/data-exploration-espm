@@ -1,8 +1,10 @@
 ---
-title: "Untitled"
+title: "Análise dos dados coletados do projeto interdisciplinar"
 author: "Guilherme Oliveira Casagrande"
 date: "2023-12-04"
-output: word_document
+output:
+  html_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -23,10 +25,61 @@ opts_chunk$set(echo = TRUE)
 fonte <- read.csv("fonte.csv", sep = ";")
 ```
 
+## Análise dos dados coletados
+
+O processo de raspagem de dados foi implementado em Python, fazendo uso de
+bibliotecas como Selenium para interação com páginas web dinâmicas, FastAPI para a
+criação de uma API que recebe e armazena dados, e MySQL para o armazenamento em um
+banco de dados. A coleta de dados envolveu a navegação pelo site de imóveis Vivareal,
+extração de informações importantes sobre os imóveis de suas páginas, e posterior
+armazenamento em um banco de dados para análise posterior.
+
+A avaliação da raspagem de dados revelou algumas considerações importantes para a
+qualidade e aplicabilidade dos dados coletados. Inicialmente, ao raspar dados dos sites Lopes
+Imóveis e Vivareal, ficou evidente que a porcentagem da amostra resultante utilizável para o
+intuito do projeto era significativamente pequena, especialmente devido à inadequação dos
+dados provenientes do site Lopes Imóveis para utilização efetiva em nosso projeto. Diante
+desse desafio, reconhecemos a necessidade de explorar mais fontes de dados para enriquecer
+a amostra.
+
+Além disso, observamos que, para um projeto mais abrangente e informativo, teria sido
+interessante explorar um tema que envolvesse mais variáveis manipuláveis. A ampliação do
+escopo permitiria uma análise mais completa e a identificação de padrões mais sutis no
+mercado imobiliário de luxo em São Paulo.
+
+Uma constatação relevante foi a predominância de dados relacionados a galpões,
+pontos comerciais, terrenos e fazendas, constituindo a maioria da amostra coletada. Esse
+excesso de dados em categorias específicas, especialmente galpões, pontos comerciais e
+fazendas, levou à exclusão de metade da amostra, uma vez que esses tipos de propriedades
+não atendiam ao propósito central do projeto. Reconhecemos que, em futuras raspagens, seria
+fundamental implementar limites mais precisos para evitar a inclusão excessiva de categorias
+que não contribuem significativamente para os objetivos do projeto.
+
+## Descrição dos dados e variáveis coletadas
+
+1. ID Único: Um identificador único atribuído a cada entrada no conjunto de dados,
+garantindo a distinção entre diferentes registros.
+2. Fonte (Site Vivareal e Lopes Imóveis): A indicação da fonte dos dados, que é o site
+de imóveis Vivareal, esclarecendo a origem das informações.
+3. Número de Dormitórios, Banheiros e Vagas (separadamente): Informações sobre a
+quantidade de dormitórios, banheiros e vagas de garagem, detalhando a configuração
+interna da propriedade.
+4. Preço: O valor monetário associado a cada propriedade, refletindo o preço de venda
+ou locação.
+5. Área Total: A medida em metros quadrados representa a área total da propriedade,
+fornecendo uma indicação do tamanho físico do imóvel.
+6. Endereço Completo: O endereço completo, incluindo rua, número, bairro, cidade e
+estado, permitindo uma localização precisa da propriedade.
+7. Bairro Específico:O bairro específico destaca a região na qual a propriedade está
+situada.
+8. Tipo do Imóvel: A classificação do imóvel, indicando se é uma casa, apartamento,
+terreno, prédio, ou outra categoria específica.
+9. Latitude e Longitude do Imóvel (separadamente): As coordenadas geográficas que
+representam a localização exata da propriedade no mapa, possibilitando análises
+espaciais e visualizações em sistemas de mapeamento.
+
 
 ## Regressão linear
-
-## Preparação dos dados
 
 ```{r, message = FALSE, warning = FALSE, echo=FALSE}
 dados = fonte[,1:8] %>% filter(source == 'vivareal') %>% drop_na()
@@ -36,8 +89,6 @@ dados$timestamp = NULL
 dados$source = NULL
 ```
 
-
-## Etapa descritiva
 ```{r, message = FALSE, warning = FALSE, echo=FALSE}
 ggpairs(dados)
 ```
@@ -74,6 +125,11 @@ resultado = summary(modelo3)
 
 kable(round(resultado$coefficients,2), caption = "Resultados finais")
 ```
+
+Ao conduzir uma análise exploratória, destaca-se a semelhança entre o número de
+quartos e o número de banheiros. Essa relação sugere que é possível remover a variável de
+banheiros para tornar o modelo mais preciso da realidade. O modelo levanta aponta que a
+área do imóvel têm uma relação direta com o preço do imóvel, dando origem a fórmula: $Preço = 4297,17 * area + 18894426,70$
 
 ## Gráfico de dispersão
 
@@ -118,6 +174,16 @@ ggplot(top_10_bairros, aes(x = Bairro, y = media_area, fill = media_area)) +
   scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
 ```
 
+O gráfico de barras exibe a média de preços por tipo de imóvel para apartamentos
+em São Paulo, destacando uma relação positiva entre preço e sofisticação do imóvel. A maior
+medida por metro quadrado é o do Jardim Santa Fé.
+
+Observações indicam uma relação mais forte entre preço e tipo de imóvel nos
+segmentos mais elevados, sugerindo que compradores nessas categorias valorizam mais
+qualidade e características específicas. Casas, apartamentos de alto padrão e de luxo
+apresentam-se como as opções mais caras, enquanto apartamentos de padrão médio e baixo
+são mais acessíveis
+
 
 ## Clusterização
 
@@ -159,3 +225,18 @@ dados3$cluster = grupos$cluster # associa o numero do cluster aos dados
 # library(cluster)
 clusplot(dados3, grupos$cluster, color=TRUE, shade=TRUE, labels=2, lines=0, main = "Clustering")
 ```
+
+No contexto do mercado imobiliário paulistano, o gráfico sugere que compradores
+estão dispostos a pagar mais por propriedades de maior qualidade, especialmente em áreas
+centrais. Fatores como aumento da renda, mudanças no estilo de vida e a escassez de terrenos
+em áreas centrais impactam positivamente nos preços dos imóveis.
+Dados específicos revelam que apartamentos de alto padrão lideram como os mais
+caros (R\$ 10 milhões em média), seguidos por apartamentos de luxo (R\$ 5 milhões) e casas
+(R\$ 4 milhões). Apartamentos de padrão médio e baixo representam opções mais acessíveis.
+Concluindo, o gráfico aponta para uma segmentação do mercado imobiliário em
+diferentes faixas de preço, orientando os desenvolvedores na concepção de empreendimentos
+alinhados às demandas específicas de cada segmento.
+
+[Link do repositório do GitHub](https://github.com/ryguigas0/data-exploration-espm/blob/main/proj_interdisciplinar/documento.Rmd)
+
+[Link da fonte de dados para análise](https://acadespm-my.sharepoint.com/:x:/g/personal/guilherme_casagrande_acad_espm_br/EQsVskZan7BKspX6gbyntVkBVw6mMI3GQjfIcw4flnJ47Q?e=dQbrRc)
